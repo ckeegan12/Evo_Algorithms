@@ -5,7 +5,7 @@ class EvolutionAlgorithmBase:
     """
     Base class for Evolution Algorithms.
     """
-    def __init__(self, func, n_dim, size_pop, max_iter=200, prob_mut=0.001):
+    def __init__(self, func, n_dim, size_pop, max_iter, prob_mut):
         self.func = func
         self.n_dim = n_dim
         self.size_pop = size_pop
@@ -50,9 +50,7 @@ class DE(EvolutionAlgorithmBase):
         The crossover rate (CR).
     """
     def __init__(self, func, F, lb, ub,
-                 size_pop, n_dim=20, max_iter=200, prob_mut=0.7,
-                 constraint_eq=tuple(), constraint_ueq=tuple(),
-                 n_processes=0):
+                 size_pop, n_dim, max_iter, prob_mut):
         # Note: 'prob_mut' corresponds to 'cr' (crossover rate) in sample code
         super().__init__(func, n_dim, size_pop, max_iter, prob_mut)
 
