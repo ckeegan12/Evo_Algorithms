@@ -129,9 +129,65 @@ def run_optimization():
         return
 
     # Load state dictionary
-    fixed_state_dict = torch.load(model_path, map_location=device)
+    checkpoint = torch.load(model_path, map_location=device)
+    if 'net' in checkpoint:
+        state_dict_raw = checkpoint['net']
+    else:
+        state_dict_raw = checkpoint
+        
+    def remap_key(key):
+        """Map original checkpoint keys to the correct AdderNet naming."""
+        new_key = key.replace('module.', '')
+
+        # conv and batchnorm generic
+        if new_key.startswith('conv1.') or new_key.startswith('bn1.') or new_key.startswith('fc.') or new_key.startswith('bn2.'):
+            return new_key
+
+        # Process residual layers
+        for layer_num in [1, 2, 3]:
+            prefix = f'layer{layer_num}.'
+            if new_key.startswith(prefix):
+                rest = new_key[len(prefix):]  # everything after 'layerX.'
+
+                # If next is block index
+                if len(rest) > 0 and rest[0].isdigit():
+                    dot_idx = rest.find('.')
+                    if dot_idx != -1:
+                         block_num = rest[:dot_idx]
+                         rest_after_block = rest[dot_idx+1:]
+                         
+                         # Handle downsample case
+                         if rest_after_block.startswith('downsample.'):
+                             ds_rest = rest_after_block[len('downsample.'):]
+                             if ds_rest.startswith('0.'):
+                                 # conv -> adder
+                                 return f'layer{layer_num}.downsample_adder.{ds_rest[2:]}'
+                             elif ds_rest.startswith('1.'):
+                                 return f'layer{layer_num}.downsample_bn.{ds_rest[2:]}'
+
+                         # Otherwise: normal residual block conv/bn -> adder/bn
+                         # Check if it is conv1/2 or bn1/2
+                         # In original: conv1 -> adder1, conv2 -> adder2
+                         if 'conv1.' in rest_after_block:
+                             rest_after_block = rest_after_block.replace('conv1.', 'adder1.')
+                         elif 'conv2.' in rest_after_block:
+                             rest_after_block = rest_after_block.replace('conv2.', 'adder2.')
+                             
+                         return f'layer{layer_num}.blocks.{block_num}.{rest_after_block}'
+        
+        return new_key
+
+    # Apply remapping
+    fixed_state_dict = {}
+    for k, v in state_dict_raw.items():
+        fixed_key = remap_key(k)
+        fixed_state_dict[fixed_key] = v
     
     # Prepare keys
+    print("Debug: First 10 keys in fixed_state_dict:")
+    for key in list(fixed_state_dict.keys())[:10]:
+        print(key)
+        
     adder_keys = get_adder_layer_keys(fixed_state_dict)
     print(f"Found {len(adder_keys)} adder layers to optimize.")
     if len(adder_keys) == 0:
