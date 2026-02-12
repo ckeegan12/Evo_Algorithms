@@ -1,4 +1,4 @@
-
+import pandas as pd
 import numpy as np
 
 class EvolutionAlgorithmBase:
@@ -83,7 +83,7 @@ class DE(EvolutionAlgorithmBase):
 
     def crossover_op(self, mutated, target, cr):
         """
-        Crossover operation (Binomial)
+        Crossover operation
         """
         # generate a uniform random value for every dimension
         p = np.random.rand(self.n_dim)
@@ -145,6 +145,8 @@ class DE(EvolutionAlgorithmBase):
             self.generation_best_X.append(self.X[generation_best_index, :].copy())
             self.generation_best_Y.append(current_best_y)
             self.all_history_Y.append(self.Y.copy())
+            
+            print(f"Generation {i+1}: Best Accuracy = {current_best_y:.2f}%")
             
             # Update global best
             if current_best_y > self.best_y:
