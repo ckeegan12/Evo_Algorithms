@@ -67,6 +67,8 @@ class DE(EvolutionAlgorithmBase):
         """Create the initial population"""
         # Initialize population with random values between 1 and 5
         self.X = 1 + 4 * np.random.rand(self.size_pop, self.n_dim)
+        # Round to hundredths place (2 decimal places)
+        self.X = np.round(self.X, 2)
         return self.X
 
     def mutation_op(self, x, F):
@@ -86,11 +88,18 @@ class DE(EvolutionAlgorithmBase):
         """
         # generate a uniform random value for every dimension
         p = np.random.rand(self.n_dim)
-        # generate trial vector by binomial crossover
-        # trial = [mutated[i] if p[i] < cr else target[i] for i in range(dims)]
-        # Vectorized version for single individual:
-        trial = np.where(p < cr, mutated, target)
-        return trial
+
+        # ensure at least one parameter is from mutated vector
+        j_rand = np.random.randint(0, self.n_dim)
+        
+        # Apply the crossover logic:
+        # Use mutant value if rand <= CR OR if it's the forced index
+        trial_vector = np.where((p <= cr) | (np.arange(self.n_dim) == j_rand), 
+                                mutated, 
+                                target)
+        # Round to hundredths place (2 decimal places)
+        trial_vector = np.round(trial_vector, 2)
+        return trial_vector
 
     def run(self, max_iter=None):
         self.max_iter = max_iter or self.max_iter

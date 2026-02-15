@@ -217,12 +217,6 @@ def run_optimization():
             
         de = DE(objective, F, lb, ub, size_pop, n_dim, max_iter, prob_mut)
         
-        # Inject initial guess of 2.5 for all dimensions
-        initial_guess = np.ones(n_dim) * 2.5
-        de.X[0] = initial_guess
-        # Re-evaluate the injected individual
-        de.Y[0] = de.func(de.X[0])
-        
         best_x, best_acc = de.run()
         
         print(f"Best Max Vals for {bits}-bit: {best_x}")
