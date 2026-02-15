@@ -64,8 +64,9 @@ class DE(EvolutionAlgorithmBase):
         self.Y = np.array([self.func(x) for x in self.X])
 
     def crtbp(self):
-        """Create the initial population randomly within bounds"""
-        self.X = self.lb + (np.random.rand(self.size_pop, self.n_dim) * (self.ub - self.lb))
+        """Create the initial population"""
+        # Initialize population with random values between 1 and 5
+        self.X = 1 + 4 * np.random.rand(self.size_pop, self.n_dim)
         return self.X
 
     def mutation_op(self, x, F):
@@ -127,6 +128,8 @@ class DE(EvolutionAlgorithmBase):
                      obj_trial = self.func(trial.reshape(1, -1))[0]
                 else:
                      obj_trial = self.func(trial)
+                
+                print(f"Trial {j} accuracy: {obj_trial:.2f}%")
                 
                 obj_target = self.Y[j]
                 

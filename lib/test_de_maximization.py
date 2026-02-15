@@ -199,7 +199,7 @@ def run_optimization():
     size_pop = 20
     max_iter = 10 
     prob_mut = 0.7 # Also called CR
-    F = 0.5
+    F = 0.7
     
     # Activation value range
     lb = [0.1] * n_dim
