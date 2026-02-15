@@ -197,7 +197,7 @@ def run_optimization():
     # DE Parameters
     n_dim = len(adder_keys)
     size_pop = 20
-    max_iter = 10 
+    max_iter = 50 
     prob_mut = 0.7 # Also called CR
     F = 0.7
     
