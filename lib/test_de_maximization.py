@@ -195,15 +195,15 @@ def run_optimization():
         return
     
     # DE Parameters
-    n_dim = len(adder_keys)
+    n_dim = 20 
     size_pop = 20
-    max_iter = 10 
+    max_iter = 20 
     prob_mut = 0.7 # Also called CR
     F = 0.8  
     
-    # Activation value range
-    lb = [0.1] * n_dim
-    ub = [20.0] * n_dim 
+    # Activation value range: Only first 4 layers optimize, rest fixed at 2.5
+    lb = [0.1] * 4 + [2.5] * (n_dim - 4)
+    ub = [20.0] * 4 + [2.5] * (n_dim - 4)
 
     bit_array = [8] # Bits to be tested
     
@@ -216,6 +216,17 @@ def run_optimization():
             return acc # maximizing accuracy
             
         de = DE(objective, F, lb, ub, size_pop, n_dim, max_iter, prob_mut)
+        
+        # Initialize population: 
+        # Start everyone at 2.5 for all 20 dimensions
+        de.X = np.ones((size_pop, n_dim)) * 2.5
+        # Only randomize the first 4 dimensions with Normal Distribution (mean 2.5, std 0.3)
+        de.X[:, :4] = np.random.normal(2.5, 0.3, (size_pop, 4))
+        de.X = np.round(de.X, 2)
+        de.X = np.clip(de.X, lb, ub) # Ensure valid starting points
+
+        # Re-evaluate initial population
+        de.Y = np.array([de.func(x) for x in de.X])
         
         best_x, best_acc = de.run()
         
