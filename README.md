@@ -45,18 +45,22 @@ The trial vector is evaluated against the target vector using the **Accuracy** o
 - `lib/Diff_evo.py`: core implementation of the Differential Evolution algorithm.
 - `lib/test_de_maximization.py`: Main script for running the optimization. It handles:
     - Model loading and weight remapping.
-    - Automated Quantization (AOQ).
+    - Activation Oriented Quantization (AOQ).
     - Evaluation of candidate solutions.
-- `lib/AdderNet_model/`: Contains the AdderNet 2.0 architecture and custom layers (FBR support).
+- `lib/AdderNet_model/`: Contains the AdderNet 2.0 architecture and custom layers (FBR supported).
 
 ## 📈 Optimization Process
 
-The optimization uses a strictly constrained search space defined by a template of previous successful runs. This allows the algorithm to focus on fine-tuning sensitive layers (like the first and last blocks) while maintaining stable values for others.
+The final optimization uses a strictly constrained search space defined by a template of previous successful runs. This iterative process was key to achieving high accuracy efficiently:
+
+1.  **Initial Attempt:** I first tried a broad search space with bounds set to **[1, 20]**. However, the high dimensionality (20 layers) led to an excessively long optimization time.
+2.  **Refinement:** The bounds were then narrowed to **[2, 4]** for a previous run of **50 generations with 50 individuals**.
+3.  **Final Optimization:** After that run, I selected the **top 50 performing individuals** to initialize a new run of **50 generations**. This final phase used even stricter lower and upper bounds based on the best results, allowing the algorithm to focus on fine-tuning sensitive layers while maintaining stability.
 
 ```python
-# Example Template Bounds
+# Final Template Bounds (Example)
 lb = [2.4, 2.73, 2.63, 2.4, ...] # Strictly constrained lower bounds
 ub = [2.4, 2.74, 2.67, 2.4, ...] # Strictly constrained upper bounds
 ```
 
-By concentrating the search on these high-impact dimensions, the DE algorithm identifies the subtle correlations between layer-wise clipping that standard heuristics or layer-wise quantization might miss.
+By concentrating the search on these high-impact dimensions and seeding the population with proven candidates, the DE algorithm identifies the subtle correlations between layer-wise clipping that standard heuristics or layer-wise quantization might miss.
