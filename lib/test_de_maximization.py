@@ -196,16 +196,16 @@ def run_optimization():
     
     # DE Parameters
     n_dim = 20 
-    size_pop = 20
-    max_iter = 20 
+    size_pop = 50
+    max_iter = 50 
     prob_mut = 0.7 # Also called CR
     F = 0.8  
     
-    # Activation value range: Only first 4 layers optimize, rest fixed at 2.5
-    lb = [0.1] * 4 + [2.5] * (n_dim - 4)
-    ub = [20.0] * 4 + [2.5] * (n_dim - 4)
+    # Activation value range: Constrained by provided template
+    lb = [2.4, 2.73, 2.63, 2.4, 2.61, 2.45, 2.53, 2.48, 3.09, 2.5, 2.13, 2.36, 2.0, 2.52, 2.18, 2.0, 2.29, 2.21, 2.0, 2.38]
+    ub = [2.4, 2.74, 2.67, 2.4, 2.61, 2.45, 2.68, 2.48, 3.10, 2.5, 2.13, 2.36, 2.0, 2.52, 2.18, 2.0, 2.29, 2.21, 2.0, 2.38]
 
-    bit_array = [8] # Bits to be tested
+    bit_array = [4] # Bits to be tested (unsigned integer 4)
     
     for bits in bit_array:
         print(f"\nOptimizing for {bits}-bit quantization...")
@@ -218,15 +218,11 @@ def run_optimization():
         de = DE(objective, F, lb, ub, size_pop, n_dim, max_iter, prob_mut)
         
         # Initialize population: 
-        # Start everyone at 2.5 for all 20 dimensions
-        de.X = np.ones((size_pop, n_dim)) * 2.5
-        # Only randomize the first 4 dimensions with Normal Distribution (mean 2.5, std 0.3)
-        de.X[:, :4] = np.random.normal(2.5, 0.3, (size_pop, 4))
-        de.X = np.round(de.X, 2)
-        de.X = np.clip(de.X, lb, ub) # Ensure valid starting points
-
-        # Re-evaluate initial population
-        de.Y = np.array([de.func(x) for x in de.X])
+        # COMMENTED OUT: Initialization now handled within DE class's crtbp method
+        # mean_vec = np.array([3.4, 3.83, 4.0, 3.75, 3.25, 2.93, 3.36, 3.54, 2.92, 3.04, 2.57, 3.7, 2.8, 3.21, 2.88, 2.79, 2.94, 3.92, 2.78, 3.49])
+        # de.X = np.random.normal(mean_vec, 0.5, (size_pop, n_dim))
+        # de.X = np.round(de.X, 2)
+        # de.X = np.clip(de.X, lb, ub)
         
         best_x, best_acc = de.run()
         
