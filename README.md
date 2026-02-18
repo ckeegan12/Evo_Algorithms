@@ -27,8 +27,14 @@ $$V_i = X_{r1} + F \cdot (X_{r2} - X_{r3})$$
 Where $F$ is the mutation fact (set to 0.45).
 
 ### 3. Crossover
-The target vector and the mutant vector are mixed to produce a trial vector based on a crossover probability ($CR \approx 0.85$):
-$$U_{i,j} = \begin{cases} V_{i,j} & \text{if } \text{rand}(0,1) \le CR \\ X_{i,j} & \text{otherwise} \end{cases}$$
+The target vector and the mutant vector are mixed to produce a trial vector based on a crossover probability ($CR = 0.85$):
+$$
+U_{i,j} = 
+\begin{cases} 
+V_{i,j}, & \text{if rand}(0, 1) \leq CR \\
+X_{i,j}, & \text{otherwise}
+\end{cases}
+$$
 
 ### 4. Selection
 The trial vector is evaluated against the target vector using the **Accuracy** on the CIFAR-10 test set. If the trial vector yields higher accuracy, it replaces the target vector in the next generation.
