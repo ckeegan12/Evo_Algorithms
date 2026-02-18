@@ -198,8 +198,8 @@ def run_optimization():
     n_dim = 20 
     size_pop = 50
     max_iter = 50 
-    prob_mut = 0.7 # Also called CR
-    F = 0.8  
+    prob_mut = 0.85 # Also called CR
+    F = 0.45  
     
     # Activation value range: Constrained by provided template
     lb = [2.4, 2.73, 2.63, 2.4, 2.61, 2.45, 2.53, 2.48, 3.09, 2.5, 2.13, 2.36, 2.0, 2.52, 2.18, 2.0, 2.29, 2.21, 2.0, 2.38]
