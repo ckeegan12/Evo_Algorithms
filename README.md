@@ -30,12 +30,11 @@ Where $F$ is the mutation fact (set to 0.45).
 The target vector and the mutant vector are mixed to produce a trial vector based on a crossover probability ($CR = 0.85$):
 
 $$
-U_{i,j} = \left\{
-\begin{array}{ll}
-V_{i,j}, & \text{if rand}(0, 1) \leq CR \\
-X_{i,j}, & \text{otherwise}
-\end{array}
-\right.
+U_{i,j} =
+\begin{cases}
+V_{i,j} & \text{if rand}(0, 1) \leq CR \\
+X_{i,j} & \text{otherwise}
+\end{cases}
 $$
 
 ### 4. Selection
