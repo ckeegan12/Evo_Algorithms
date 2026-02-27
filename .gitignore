@@ -13,12 +13,27 @@ env.bak/
 venv.bak/
 
 # Data files
+data/
 lib/data/
+cifar-10-python.tar.gz
+cifar-10-batches-py/
 *.pth
 *.bin
 *.gz
 *.tar
 *.zip
+
+# Generated results and logs
+results/
+outputs/
+logs/
+*.csv
+*.log
+*.txt
+
+# Cached data
+cache/
+*.cache
 
 # IDE
 .vscode/
